@@ -4,6 +4,8 @@
 
 # OpenCode Walkie Talkie
 
+https://github.com/user-attachments/assets/19ce5e46-19fd-4295-b8a6-5abe7b6a42a5
+
 Yet another voice interface for OpenCode.
 
 **NOTE: This is a totally vibe-coded, personal experimental project.**
