@@ -1,0 +1,51 @@
+x-logging: &logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  app:
+    image: ghcr.io/likeablob/opencode-walkie-talkie:latest # You may want to pin the version for stability
+    ports:
+      - "127.0.0.1:5097:5097"
+    env_file:
+      - .env
+    environment:
+      - PORT=5097
+      - OPENCODE_URL=http://host.docker.internal:4096
+      - OPENAI_STT_BASEURL=http://speaches:8000
+      - OPENAI_TTS_BASEURL=http://speaches:8000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      speaches:
+        condition: service_healthy
+    restart: unless-stopped
+    init: true
+    logging: *logging
+
+  speaches:
+    image: ghcr.io/speaches-ai/speaches:latest-cuda-12.6.3
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - hf-hub-cache:/home/ubuntu/.cache/huggingface/hub
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://0.0.0.0:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+    logging: *logging
+
+volumes:
+  hf-hub-cache:

@@ -1,0 +1,11 @@
+# Exclude everything
+*
+
+# Allow only what's needed for build
+!app
+!public
+!package.json
+!package-lock.json
+!react-router.config.ts
+!vite.config.ts
+!tsconfig.json
